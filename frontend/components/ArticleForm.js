@@ -98,12 +98,12 @@ export default function ArticleForm(props) {
 			<div className='button-group'>
 				{!currentArticleId ? (
 					<button disabled={isDisabled()} id='submitArticle'>
-						{currentArticleId ? 'Update' : 'Submit'}
+						{currentArticleId ? 'Submit' : 'Submit'}
 					</button>
 				) : (
           <>
             <button disabled={isDisabled()} id='submitArticle'>
-              {currentArticleId ? 'Update' : 'Submit'}
+              {currentArticleId ? 'Submit' : 'Submit'}
             </button>
 					<button onClick={cancelEdit}>Cancel edit</button>
           </>
