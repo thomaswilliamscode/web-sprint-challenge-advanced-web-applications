@@ -29,6 +29,7 @@ export const tryLogin = (data) => {
 }
 
 
+
 // - `[GET] http://localhost:9000/api/articles`
 //   - Expects an `Authorization` request header containing a valid auth token
 //   - The response to a proper request includes `200 OK` and a list of articles which could be empty
@@ -54,6 +55,16 @@ export const getThemArticles = () => {
 }
 
 // - `[POST] http://localhost:9000/api/articles`
+export const postAnArticle = (payload) => {
+	let header = axiosWithAuth();
+
+	return header.post(articlesUrl, payload)
+		.then( (res) => {
+		})
+		.catch( (err) => {
+			console.log(err)
+		} )
+}
 //   - Expects an `Authorization` request header containing a valid auth token
 //   - Expects a payload with the following properties: `title`, `text`, `topic`
 //   - The `title` and `text` length must be >= 1, after trimming
@@ -70,7 +81,38 @@ export const getThemArticles = () => {
 //   - Example of payload: `{ "title": "foo", "text": "bar", "topic": "React" }`
 //   - The response to a proper request includes `200 OK`, a success message and the updated article
 
+export const putArticle = (data) => {
+	let header = axiosWithAuth();
+	console.log('in Axios action: ', data)
+	const {currentArticleId: id, values: article} = data
+	let url = `${articlesUrl}/${id}`
+
+	header.put(url, article)
+		.then( (res) => {
+			console.log(res)
+		})
+		.catch( (err) => {
+			console.log(err)
+		})
+
+
+}
+
 
 // - `[DELETE] http://localhost:9000/api/articles/:article_id`
 //   - Expects an `Authorization` request header containing a valid auth token
 //   - The response to a proper request includes `200 OK` and a success message
+
+export const deleteAnArticle = (id) => {
+	let header = axiosWithAuth();
+	let url = `${articlesUrl}/${id}`
+
+	header
+		.delete(url)
+		.then( (res) => {
+			console.log(res)
+		})
+		.catch( (err) => {
+			console.log(err)
+		})
+}

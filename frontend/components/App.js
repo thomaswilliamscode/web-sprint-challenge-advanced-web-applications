@@ -6,7 +6,13 @@ import Message from './Message'
 import ArticleForm from './ArticleForm'
 import Spinner from './Spinner'
 
-import { tryLogin, getThemArticles } from '../actions/index'
+import {
+	tryLogin,
+	getThemArticles,
+	postAnArticle,
+  putArticle,
+  deleteAnArticle,
+} from '../actions/index';
 
 const articlesUrl = 'http://localhost:9000/api/articles'
 const loginUrl = 'http://localhost:9000/api/login'
@@ -68,7 +74,6 @@ export default function App() {
     setSpinnerOn(true)
     // and launch an authenticated request to the proper endpoint.
     let answer = await getThemArticles()
-    console.log(answer)
     if(answer === undefined) {
       setSpinnerOn(false);
       logout()
@@ -81,20 +86,36 @@ export default function App() {
     }
   }
 
-  const postArticle = article => {
+  const postArticle = async article => {
     // ✨ implement
     // The flow is very similar to the `getArticles` function.
     // You'll know what to do! Use log statements or breakpoints
     // to inspect the response from the server.
+    setMessage('');
+		setSpinnerOn(true);
+    let response = await postAnArticle(article)
+    setCurrentArticleId()
+    getArticles()
+
   }
 
-  const updateArticle = ({ article_id, article }) => {
+  const updateArticle = (data) => {
     // ✨ implement
     // You got this!
+    // setMessage('');
+		// setSpinnerOn(true);
+    putArticle(data)
+    setCurrentArticleId();
+    getArticles()
+    // set success message
+    // setSpinnerOn(false)
+    // 
   }
 
-  const deleteArticle = article_id => {
+  const deleteArticle = id => {
     // ✨ implement
+    deleteAnArticle(id)
+    getArticles()
   }
 
   return (
@@ -132,12 +153,22 @@ export default function App() {
 						path='articles'
 						element={
 							<>
-								<ArticleForm />
+								<ArticleForm
+									articles={articles}
+									currentArticleId={currentArticleId}
+									updateArticle={updateArticle}
+                  postArticle={postArticle}
+                  setCurrentArticleId={setCurrentArticleId}
+								/>
 								<Articles
 									isLoggedIn={isLoggedIn}
 									redirectToLogin={redirectToLogin}
-                  getArticles={getArticles}
-                  articles={articles}
+									getArticles={getArticles}
+									articles={articles}
+									postArticle={postArticle}
+									setCurrentArticleId={setCurrentArticleId}
+                  currentArticleId={currentArticleId}
+                  deleteArticle={deleteArticle}
 								/>
 							</>
 						}

@@ -1,10 +1,22 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import PT from 'prop-types'
 
 export default function Articles(props) {
   // ✨ where are my props? Destructure them here
-  const { redirectToLogin, isLoggedIn, getArticles, articles } = props;
+  const {
+		redirectToLogin,
+		isLoggedIn,
+		getArticles,
+		articles,
+		postArticle,
+		setCurrentArticleId,
+		getArticleById,
+    deleteArticle,
+    currentArticleId,
+	} = props;
+
+  const [isDisabled, setIsDisabled] = useState(false)
 
 
 
@@ -16,6 +28,14 @@ export default function Articles(props) {
       redirectToLogin()
     }
   }, [isLoggedIn])
+
+  useEffect( () => {
+    if (currentArticleId) {
+      setIsDisabled(true)
+    } else {
+      setIsDisabled(false)
+    }
+  }, [currentArticleId])
 
   useEffect( () => {
     
@@ -31,6 +51,14 @@ export default function Articles(props) {
     
   }, [])
 
+  const editButton = (id) => {
+    setCurrentArticleId(id)
+  }
+
+  const deleteButton = (id) => {
+    deleteArticle(id)
+  }
+
   return (
     // ✨ fix the JSX: replace `Function.prototype` with actual functions
     // and use the articles prop to generate articles
@@ -40,6 +68,7 @@ export default function Articles(props) {
         articles.length === 0
           ? 'No articles yet'
           : articles.map(art => {
+            let {article_id: id} = art
             return (
               <div className="article" key={art.article_id}>
                 <div>
@@ -48,8 +77,9 @@ export default function Articles(props) {
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={true} onClick={Function.prototype}>Edit</button>
-                  <button disabled={true} onClick={Function.prototype}>Delete</button>
+                  <button disabled={isDisabled} 
+                    onClick={ () => editButton(id) }>Edit</button>
+                  <button disabled={isDisabled} onClick={() => deleteButton(id)}>Delete</button>
                 </div>
               </div>
             )
