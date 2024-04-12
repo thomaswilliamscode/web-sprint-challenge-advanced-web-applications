@@ -26,6 +26,7 @@ export default function App() {
   const [currentArticleId, setCurrentArticleId] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [ firstRender, setFirstRender ] = useState(true)
 
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
@@ -38,6 +39,9 @@ export default function App() {
   navigate('/articles');
 }
 
+  useEffect( () => {
+  }, [message])
+
 
   const logout = () => {
     // ✨ implement
@@ -48,6 +52,7 @@ export default function App() {
     // In any case, we should redirect the browser back to the login screen,
     // using the helper above.
     setIsLoggedIn(false)
+    setFirstRender(true)
     redirectToLogin()
   }
 
@@ -70,7 +75,6 @@ export default function App() {
   const getArticles = async () => {
     // ✨ implement
     // We should flush the message state, turn on the spinner
-    setMessage('')
     setSpinnerOn(true)
     // and launch an authenticated request to the proper endpoint.
     let answer = await getThemArticles()
@@ -80,7 +84,10 @@ export default function App() {
     } else {
       const { articles, message } = answer;
       setArticles(articles);
-			setMessage(message);
+      if (firstRender) {
+				setMessage(message);
+				setFirstRender(false);
+			}
 			// Don't forget to turn off the spinner!
 			setSpinnerOn(false);
     }
@@ -91,20 +98,22 @@ export default function App() {
     // The flow is very similar to the `getArticles` function.
     // You'll know what to do! Use log statements or breakpoints
     // to inspect the response from the server.
-    setMessage('');
 		setSpinnerOn(true);
     let response = await postAnArticle(article)
+    const { message } = response
+    setMessage(message)
     setCurrentArticleId()
     getArticles()
 
   }
 
-  const updateArticle = (data) => {
+  const updateArticle = async (data) => {
     // ✨ implement
     // You got this!
     // setMessage('');
 		// setSpinnerOn(true);
-    putArticle(data)
+    let message = await putArticle(data)
+    setMessage(message)
     setCurrentArticleId();
     getArticles()
     // set success message
@@ -112,17 +121,19 @@ export default function App() {
     // 
   }
 
-  const deleteArticle = id => {
+  const deleteArticle = async id => {
     // ✨ implement
-    deleteAnArticle(id)
+    let message = await deleteAnArticle(id)
+    setCurrentArticleId();
+    setMessage(message)
     getArticles()
   }
 
   return (
 		// ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
 		<>
-			<Spinner />
-			<Message />
+			<Spinner on={spinnerOn}/>
+			<Message message={message}/>
 			<button id='logout' onClick={logout}>
 				Logout from app
 			</button>
@@ -159,6 +170,7 @@ export default function App() {
 									updateArticle={updateArticle}
                   postArticle={postArticle}
                   setCurrentArticleId={setCurrentArticleId}
+                  setMessage={setMessage}
 								/>
 								<Articles
 									isLoggedIn={isLoggedIn}

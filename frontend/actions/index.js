@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 import axiosWithAuth from '../axios';
+import Message from '../components/Message'
 
 const loginUrl = 'http://localhost:9000/api/login';
 const articlesUrl = 'http://localhost:9000/api/articles'
@@ -60,6 +61,7 @@ export const postAnArticle = (payload) => {
 
 	return header.post(articlesUrl, payload)
 		.then( (res) => {
+			return res.data
 		})
 		.catch( (err) => {
 			console.log(err)
@@ -87,9 +89,11 @@ export const putArticle = (data) => {
 	const {currentArticleId: id, values: article} = data
 	let url = `${articlesUrl}/${id}`
 
-	header.put(url, article)
+	return header
+		.put(url, article)
 		.then( (res) => {
-			console.log(res)
+			console.log(res.data.message)
+			return res.data.message
 		})
 		.catch( (err) => {
 			console.log(err)
@@ -107,10 +111,11 @@ export const deleteAnArticle = (id) => {
 	let header = axiosWithAuth();
 	let url = `${articlesUrl}/${id}`
 
-	header
+	return header
 		.delete(url)
 		.then( (res) => {
-			console.log(res)
+			return res.data.message
+
 		})
 		.catch( (err) => {
 			console.log(err)
